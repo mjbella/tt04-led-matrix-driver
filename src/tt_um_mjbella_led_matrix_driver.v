@@ -58,21 +58,7 @@ module tt_um_mjbella_led_matrix_driver #( parameter MAX_COUNT = 24'd10_000_000 )
 		col_count <= col_count + 1;
 	end
 
-	reg [7:0] mux_out;
-	assign col_out = mux_out;
-	always@(col_count) begin
-		case(col_count)
-			3'b000 : mux_out <= vbuf[7:0];
-			3'b001 : mux_out <= vbuf[15:8];
-			3'b010 : mux_out <= vbuf[23:16];
-			3'b011 : mux_out <= vbuf[31:24];
-			3'b100 : mux_out <= vbuf[39:32];
-			3'b101 : mux_out <= vbuf[47:40];
-			3'b110 : mux_out <= vbuf[55:48];
-			3'b111 : mux_out <= vbuf[63:56];
-		endcase
-	end
-
+	cvmux cmux(.col_counter(col_count), .mux_out(col_out));
 	colsel cdec(.col_counter(col_count), .decode_out(col_select));
 
 endmodule

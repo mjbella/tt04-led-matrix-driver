@@ -17,3 +17,22 @@ module colsel (
 		endcase
 	end
 endmodule
+
+module cvmux(
+	input wire [2:0] col_counter,
+	output wire [7:0] mux_out
+);
+	always@(col_counter) begin
+		case(col_counter)
+			3'b000 : mux_out <= vbuf[7:0];
+			3'b001 : mux_out <= vbuf[15:8];
+			3'b010 : mux_out <= vbuf[23:16];
+			3'b011 : mux_out <= vbuf[31:24];
+			3'b100 : mux_out <= vbuf[39:32];
+			3'b101 : mux_out <= vbuf[47:40];
+			3'b110 : mux_out <= vbuf[55:48];
+			3'b111 : mux_out <= vbuf[63:56];
+		endcase
+	end
+endmodule
+
