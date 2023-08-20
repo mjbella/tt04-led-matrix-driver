@@ -2,7 +2,7 @@
 
 module colsel (
 	input wire [2:0] col_counter,
-	output wire [7:0] decode_out
+	output reg [7:0] decode_out
 );
 	always@(col_counter) begin
 		case(col_counter)
@@ -20,7 +20,8 @@ endmodule
 
 module cvmux(
 	input wire [2:0] col_counter,
-	output wire [7:0] mux_out
+	input wire [63:0] vbuf,
+	output reg [7:0] mux_out
 );
 	always@(col_counter) begin
 		case(col_counter)
