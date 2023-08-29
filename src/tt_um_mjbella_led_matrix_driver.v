@@ -17,8 +17,7 @@ module tt_um_mjbella_led_matrix_driver #( parameter MAX_COUNT = 24'd10_000_000 )
 	wire [7:0] col_out;
     assign uo_out = col_out;
 	wire [7:0] col_select;
-	// Replace this with 8 and gates to enable the blanking period.
-	//assign uio_out = col_select;
+
 	genvar l;
 	generate
 	  for (l=0; l<7; l++) begin
@@ -72,14 +71,20 @@ module tt_um_mjbella_led_matrix_driver #( parameter MAX_COUNT = 24'd10_000_000 )
 	end
 
 	// Divide down the column counter rate by taking the top 3 bits
-	wire act_col[2:0] = col_count[7:5]
+	wire [2:0] act_col = col_count[7:5];
 	// de-ghosting / blanking timer
-	
+	wire cc1 = (col_count[2:0] == 3'b110); //
+	wire cc2 = (col_count[2:0] == 3'b000); //
 	reg blank;
-	// TODO: Add blanking time logic
-	assign blank = 1'b1;
+	always@(posedge cc1) begin
+		blank = 1;
+	end
 
-	cvmux cmux(.col_counter(col_count), .mux_out(col_out), .vbuf(vbuf));
-	colsel cdec(.col_counter(col_count), .decode_out(col_select));
+	always@(posedge  cc2) begin
+		blank = 0;
+	end
+
+	cvmux cmux(.col_counter(act_col), .mux_out(col_out), .vbuf(vbuf));
+	colsel cdec(.col_counter(act_col), .decode_out(col_select));
 
 endmodule
