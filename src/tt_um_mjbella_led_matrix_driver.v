@@ -77,7 +77,8 @@ module tt_um_mjbella_led_matrix_driver #( parameter MAX_COUNT = 24'd10_000_000 )
 	wire cc2 = (col_count[2:0] == 3'b000); //
 	wire blank;
 	wire low = 1'b0;
-	dffsr_cell(.clk(low), .d(low), .s(cc1), .r(cc2), .q(blank))
+
+	dffsr_cell blank_sr(.clk(low), .d(low), .s(cc1), .r(cc2), .q(blank));
 
 	cvmux cmux(.col_counter(act_col), .mux_out(col_out), .vbuf(vbuf));
 	colsel cdec(.col_counter(act_col), .decode_out(col_select));
