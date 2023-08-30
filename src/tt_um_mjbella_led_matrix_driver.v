@@ -20,7 +20,7 @@ module tt_um_mjbella_led_matrix_driver #( parameter MAX_COUNT = 24'd10_000_000 )
 
 	genvar l;
 	generate
-	  for (l=0; l<7; l++) begin
+	  for (l=0; l<=7; l++) begin
 		assign uio_out [l] = blank & col_select [l];
 	  end
 	endgenerate
