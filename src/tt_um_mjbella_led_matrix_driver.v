@@ -1,6 +1,6 @@
 `default_nettype none
 
-module tt_um_mjbella_led_matrix_driver #( parameter MAX_COUNT = 24'd10_000_000 ) (
+module tt_um_mjbella_led_matrix_driver (
     input  wire [7:0] ui_in,    // Dedicated inputs - connected to the input switches
     output wire [7:0] uo_out,   // Dedicated outputs - connected to the 7 segment display
     input  wire [7:0] uio_in,   // IOs: Bidirectional Input path
@@ -78,7 +78,7 @@ module tt_um_mjbella_led_matrix_driver #( parameter MAX_COUNT = 24'd10_000_000 )
 	wire blank;
 	wire low = 1'b0;
 
-	dffsr_cell blank_sr(.clk(low), .d(low), .s(cc1), .r(cc2), .q(blank));
+	dffsr_cell blank_sr(.clk(clk), .d(low), .s(cc1), .r(cc2), .q(blank));
 
 	cvmux cmux(.col_counter(act_col), .mux_out(col_out), .vbuf(vbuf));
 	colsel cdec(.col_counter(act_col), .decode_out(col_select));
