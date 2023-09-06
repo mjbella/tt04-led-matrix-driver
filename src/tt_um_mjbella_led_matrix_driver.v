@@ -43,14 +43,20 @@ module tt_um_mjbella_led_matrix_driver (
 	reg [nleds-1:0] vbuf;
 	// Clock data in
 	always@(posedge dclk) begin
-		chain[0] <= din;
+		if(reset)
+			chain[0] <= 0;
+		else
+			chain[0] <= din;
 	end
 
 	genvar k;
 	generate 
 	  for (k = 0; k < nleds-1; k++) begin
-		always@(posedge clk) begin
-		  chain[k+1] <= chain[k];
+		always@(posedge dclk) begin
+            if(reset)
+				chain[k+1] <= 0;
+			else
+				chain[k+1] <= chain[k];
 		end
 	  end
 	endgenerate
@@ -60,7 +66,10 @@ module tt_um_mjbella_led_matrix_driver (
 	generate 
 	  for (j = 0; j < nleds; j++) begin
 		always@(posedge strobe) begin
-		  vbuf[j] <= chain[j];
+			if(reset)
+				vbuf[j] <= 0;
+			else
+				vbuf[j] <= chain[j];
 		end
 	  end
 	endgenerate
@@ -73,12 +82,13 @@ module tt_um_mjbella_led_matrix_driver (
 	// Divide down the column counter rate by taking the top 3 bits
 	wire [2:0] act_col = col_count[7:5];
 	// de-ghosting / blanking timer
-	wire cc1 = (col_count[2:0] == 3'b110); //
-	wire cc2 = (col_count[2:0] == 3'b000); //
-	wire blank;
-	wire low = 1'b0;
-
-	dffsr_cell blank_sr(.clk(clk), .d(low), .s(cc1), .r(cc2), .q(blank));
+	reg blank;
+	always@(col_count) begin
+		if(col_count[2:0] == 3'b000)
+			blank <= 0;
+		else if(col_count[2:0] == 3'b110)
+			blank <= 1;
+	end
 
 	cvmux cmux(.col_counter(act_col), .mux_out(col_out), .vbuf(vbuf));
 	colsel cdec(.col_counter(act_col), .decode_out(col_select));
