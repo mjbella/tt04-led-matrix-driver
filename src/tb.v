@@ -21,9 +21,12 @@ module tb ();
     reg  rst_n;
     reg  ena;
     reg  [7:0] ui_in;
+	wire din = ui_in[0];
+	wire dclk = ui_in[1];
+    wire strobe = ui_in[2];
+
     reg  [7:0] uio_in;
 
-    wire [6:0] segments = uo_out[6:0];
     wire [7:0] uo_out;
     wire [7:0] uio_out;
     wire [7:0] uio_oe;

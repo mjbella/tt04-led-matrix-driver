@@ -8,12 +8,34 @@ async def reset_it(dut):
     # reset
     dut._log.info("reset")
     dut.rst_n.value = 0
-    # set the compare value
-    dut.ui_in.value = 1
-    await ClockCycles(dut.clk, 10)
+    dut.strobe.value = 0
+    dut.dclk.value = 0
+    await Timer(10, units='us')
+    dut.strobe.value = 1
+    dut.dclk.value = 1
+    await Timer(10, units='us')
+    dut.strobe.value = 0
+    dut.dclk.value = 0
     dut.rst_n.value = 1
+    await Timer(10, units='us')
 
-
+async def testpattern(dut):
+    patternlen = 64
+    pattern = [0] * patternlen
+    dut.dclk.value = 0
+    dut.strobe.value = 0
+    await Timer(10, units='us')
+    for bit in pattern:
+    	dut.din.value = bit
+    	await Timer(1, units='us')
+    	dut.dclk.value = 1
+    	await Timer(10, units='us')
+    	dut.dclk.value = 0
+    	await Timer(10, units='us')
+    dut.strobe.value = 1
+    await Timer(10, units='us')
+    dut.strobe.value = 0
+    await Timer(10, units='us')
 
 @cocotb.test()
 async def test_7seg(dut):
@@ -21,32 +43,6 @@ async def test_7seg(dut):
     clock = Clock(dut.clk, 10, units="us")
     cocotb.start_soon(clock.start())
 
-	await reset_it(dut)
-
-    # the compare value is shifted 10 bits inside the design to allow slower counting
-    max_count = dut.ui_in.value << 10
-    dut._log.info(f"check all segments with MAX_COUNT set to {max_count}")
-    # check all segments and roll over
-    for i in range(15):
-        dut._log.info("check segment {}".format(i))
-        await ClockCycles(dut.clk, max_count)
-        assert int(dut.segments.value) == segments[i % 10]
-
-        # all bidirectionals are set to output
-        assert dut.uio_oe == 0xFF
-
-    # reset
-    dut.rst_n.value = 0
-    # set a different compare value
-    dut.ui_in.value = 3
-    await ClockCycles(dut.clk, 10)
-    dut.rst_n.value = 1
-
-    max_count = dut.ui_in.value << 10
-    dut._log.info(f"check all segments with MAX_COUNT set to {max_count}")
-    # check all segments and roll over
-    for i in range(15):
-        dut._log.info("check segment {}".format(i))
-        await ClockCycles(dut.clk, max_count)
-        assert int(dut.segments.value) == segments[i % 10]
+    await reset_it(dut)
+    await testpattern(dut)
 
