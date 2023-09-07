@@ -41,6 +41,7 @@ module tt_um_mjbella_led_matrix_driver (
 	reg [nleds-1:0] chain;
 	// output buffer
 	reg [nleds-1:0] vbuf;
+
 	// Clock data in
 	always@(posedge dclk) begin
 		if(reset)
@@ -73,10 +74,13 @@ module tt_um_mjbella_led_matrix_driver (
 		end
 	  end
 	endgenerate
-		
+	
 	reg [7:0] col_count;
 	always@(posedge clk) begin
-		col_count <= col_count + 1;
+        if(reset)
+            col_count <= 8'b00000000;
+        else
+		    col_count <= col_count + 1;
 	end
 
 	// Divide down the column counter rate by taking the top 3 bits
@@ -84,9 +88,9 @@ module tt_um_mjbella_led_matrix_driver (
 	// de-ghosting / blanking timer
 	reg blank;
 	always@(col_count) begin
-		if(col_count[2:0] == 3'b000)
+		if(col_count[4:0] == 5'b01111)
 			blank <= 0;
-		else if(col_count[2:0] == 3'b110)
+		else if(col_count[4:0] == 5'b00000)
 			blank <= 1;
 	end
 

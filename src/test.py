@@ -18,18 +18,28 @@ async def reset_it(dut):
     await Timer(10, units='us')
 
 async def testpattern(dut):
+    dut._log.info("loadpattern")
     patternlen = 64
-    pattern = [0] * patternlen
+    pattern = [0,1,0,1,0,0,0,0,
+               1,0,1,0,1,1,1,1,
+               1,1,0,0,1,0,1,0,
+               0,0,0,0,0,0,0,0,
+               1,1,1,1,1,1,1,1,
+               0,1,0,1,0,1,0,1,
+               1,0,1,0,1,0,1,0,
+               0,0,1,1,1,1,0,0]
+               
     dut.dclk.value = 0
     dut.strobe.value = 0
     await Timer(10, units='us')
-    for bit in pattern:
-    	dut.din.value = bit
-    	await Timer(1, units='us')
-    	dut.dclk.value = 1
-    	await Timer(10, units='us')
-    	dut.dclk.value = 0
-    	await Timer(10, units='us')
+    for i,bit in enumerate(pattern):
+        dut._log.info(f"Loading bit {i} of pattern")
+        dut.din.value = bit
+        await Timer(1, units='us')
+        dut.dclk.value = 1
+        await Timer(10, units='us')
+        dut.dclk.value = 0
+        await Timer(10, units='us')
     dut.strobe.value = 1
     await Timer(10, units='us')
     dut.strobe.value = 0
@@ -44,3 +54,4 @@ async def test_7seg(dut):
     await reset_it(dut)
     await testpattern(dut)
 
+    await ClockCycles(dut.clk, 1024)
