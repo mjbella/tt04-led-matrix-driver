@@ -76,8 +76,8 @@ module tt_um_mjbella_led_matrix_driver (
 	endgenerate
 	
     reg sclk;
-    reg [7:0] dcounter = 8'd0;
-    parameter DIVISOR = 8'd90;
+    reg [9:0] dcounter = 10'd0;
+    parameter DIVISOR = 10'd4;
     always@(posedge clk) begin
         dcounter <= dcounter + 8'd1;
         if(dcounter>=(DIVISOR-1))

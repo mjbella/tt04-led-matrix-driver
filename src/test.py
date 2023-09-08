@@ -9,7 +9,8 @@ async def reset_it(dut):
     dut.strobe.value = 0
     dut.dclk.value = 0
 
-    dut.blankt.value = 14
+    # Set the blanking time
+    dut.blankt.value = 30
     await Timer(10, units='us')
     dut.strobe.value = 1
     dut.dclk.value = 1
@@ -56,4 +57,4 @@ async def test_7seg(dut):
     await reset_it(dut)
     await testpattern(dut)
 
-    await ClockCycles(dut.clk, 1024*90)
+    await ClockCycles(dut.clk, 46000)
