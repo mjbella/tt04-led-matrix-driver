@@ -75,8 +75,18 @@ module tt_um_mjbella_led_matrix_driver (
 	  end
 	endgenerate
 	
+    reg sclk;
+    reg [7:0] dcounter = 8'd0;
+    parameter DIVISOR = 8'd90;
+    always@(posedge clk) begin
+        dcounter <= dcounter + 8'd1;
+        if(dcounter>=(DIVISOR-1))
+            dcounter <= 8'd0;
+        sclk <= (dcounter<DIVISOR/2)?1'b1:1'b0;
+    end
+
 	reg [7:0] col_count;
-	always@(posedge clk) begin
+	always@(posedge sclk) begin
         if(reset)
             col_count <= 8'b00000000;
         else
@@ -88,7 +98,8 @@ module tt_um_mjbella_led_matrix_driver (
 	// de-ghosting / blanking timer
 	reg blank;
 	always@(col_count) begin
-		if(col_count[4:0] == 5'b01111)
+		// if(col_count[4:0] == 5'b01111)
+		if(col_count[4:0] == ui_in[7:3])
 			blank <= 0;
 		else if(col_count[4:0] == 5'b00000)
 			blank <= 1;

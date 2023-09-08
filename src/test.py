@@ -8,6 +8,8 @@ async def reset_it(dut):
     dut.rst_n.value = 0
     dut.strobe.value = 0
     dut.dclk.value = 0
+
+    dut.blankt.value = 14
     await Timer(10, units='us')
     dut.strobe.value = 1
     dut.dclk.value = 1
@@ -48,10 +50,10 @@ async def testpattern(dut):
 @cocotb.test()
 async def test_7seg(dut):
     dut._log.info("start")
-    clock = Clock(dut.clk, 10, units="us")
+    clock = Clock(dut.clk, 100, units="ns")
     cocotb.start_soon(clock.start())
 
     await reset_it(dut)
     await testpattern(dut)
 
-    await ClockCycles(dut.clk, 1024)
+    await ClockCycles(dut.clk, 1024*90)

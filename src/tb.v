@@ -24,11 +24,13 @@ module tb ();
     reg  [7:0] uio_in;
 
     reg din;
-    reg dclk;
-    reg strobe;
     assign ui_in[0] = din;
+    reg dclk;
     assign ui_in[1] = dclk;
+    reg strobe;
     assign ui_in[2] = strobe;
+    reg [4:0] blankt;
+    assign ui_in[7:3] = blankt;
 
     wire [7:0] uo_out;
     wire [7:0] uio_out;
